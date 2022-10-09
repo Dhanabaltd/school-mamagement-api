@@ -38,3 +38,8 @@
   align-items: center;
   justify-content: space-between;
 }
+
+.landingPage {
+  text-align: center;
+  margin: 10% auto;
+}

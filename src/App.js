@@ -86,7 +86,7 @@ export default function App(props) {
         </Drawer>
 
         <Route exact path="/">
-          <Screen />
+          <Screen label="LANDINGPAGE" />
         </Route>
         <Route path="/staffAdd" >
           <Screen label="STAFFADD" />

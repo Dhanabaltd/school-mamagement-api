@@ -13,6 +13,7 @@ import EditStudent from "./student/editStudent";
 import ViewCourse from "./course/viewCourse";
 import ViewStudent from "./student/viewStudent";
 import ViewStaff from "./staff/viewStaff";
+import LandingPage from "./landingPage";
 
 export const Body = withRouter((props) => {
     const classes = useStyles();
@@ -43,7 +44,9 @@ export const Body = withRouter((props) => {
                                                         <ViewStaff value={props} />
                                                         : props?.label === "STUDENTVIEW" ?
                                                             <ViewStudent value={props} />
-                                                            : null
+                                                            : props?.label === "LANDINGPAGE" ?
+                                                                <LandingPage value={props} />
+                                                                : null
             }
         </main>
     );
