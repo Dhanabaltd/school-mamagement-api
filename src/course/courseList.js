@@ -35,15 +35,36 @@ function CourseList(props) {
     const [course, setcourse] = useState([]);
     const [open, setOpen] = useState(false);
     const [id, setId] = useState(0);
+    const [names, setNames] = useState([])
     const handleClose = () => setOpen(false);
 
     useEffect(() => {
         courseList();
     }, [])
+    useEffect(() => {
+        const Staff_names = []
+        course.map(cour => {
+            Staff_names[cour._id] = Staff_names[cour._id] ? Staff_names.cour : []
+            console.log(Staff_names, 'Staff_namesStaff_names')
+            cour.staffId.map(data => {
+                console.log(data.staffName , "ota")
+                if(Staff_names[cour._id].length > 0){
+                    Staff_names[cour._id].push(" ,")
+                    Staff_names[cour._id].push(data.staffName)
+                }else{
+                    Staff_names[cour._id].push(data.staffName)
+                }
+
+            })
+        })
+        setNames(Staff_names)
+    },[course])
+
     const courseList = () => {
         axios.get(`${Config.baseURL}/api/courses`)
             .then(res => {
                 setcourse(res.data.data);
+
             })
             .catch(error => {
                 toast.error(error);
@@ -67,6 +88,7 @@ function CourseList(props) {
 
     return (
         <>
+            {console.log('Staff_names', names)}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <p className='heading'>{props?.value.label}</p>
                 <Button onClick={() => props.value.history.push('/courseAdd')} variant="contained" startIcon={<AddIcon />}>
@@ -93,8 +115,8 @@ function CourseList(props) {
                                     <TableCell component="th" scope="row">
                                         {row.courseName}
                                     </TableCell>
-                                    <TableCell align="right">{row.staffName}</TableCell>
-                                    <TableCell align="right">{<RemoveRedEyeIcon  className='cursor' onClick={() => props.value.history.push(`/courseView/${row._id}`)} />}&nbsp;&nbsp;{<EditIcon className='themeColor cursor' onClick={() => props.value.history.push(`/courseEdit/${row._id}`)} />}&nbsp;&nbsp;{<DeleteIcon className='dangerColor cursor' onClick={() => { DeleteCourse(row._id) }} />}</TableCell>
+                                    <TableCell align="right">{names[row._id]}</TableCell>
+                                    <TableCell align="right">{<RemoveRedEyeIcon className='cursor' onClick={() => props.value.history.push(`/courseView/${row._id}`)} />}&nbsp;&nbsp;{<EditIcon className='themeColor cursor' onClick={() => props.value.history.push(`/courseEdit/${row._id}`)} />}&nbsp;&nbsp;{<DeleteIcon className='dangerColor cursor' onClick={() => { DeleteCourse(row._id) }} />}</TableCell>
                                 </TableRow>
                             ))
                         }

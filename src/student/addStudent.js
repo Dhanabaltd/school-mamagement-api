@@ -19,10 +19,13 @@ import {
 
 
 function AddStudent(props) {
+    const [student, setStudent] = useState([]);
     const [course, setcourse] = useState([]);
     const [staff, setStaff] = useState([]);
     const [imgPath, setImgPath] = useState(null);
     const [selectedDate, handleDateChange] = useState(new Date());
+    const [loading, setLoading] = useState(false);
+    const [staffCourse, setStaffCourse] = useState([]);
     const [datas, setDatas] = useState({
         studentName: "",
         email: "",
@@ -30,8 +33,8 @@ function AddStudent(props) {
         bloodGroup: "",
         fatherName: "",
         motherName: "",
-        course: "",
-        staffName: "",
+        courseId: null,
+        staffId: null,
         address: "",
         studentImage: null
     });
@@ -56,8 +59,8 @@ function AddStudent(props) {
         formdata.append("bloodGroup", datas.bloodGroup);
         formdata.append("fatherName", datas.fatherName);
         formdata.append("motherName", datas.motherName);
-        formdata.append("course", datas.course);
-        formdata.append("staffName", datas.staffName);
+        formdata.append("courseId", datas.courseId);
+        formdata.append("staffId", datas.staffId);
         formdata.append("address", datas.address);
 
 
@@ -92,13 +95,31 @@ function AddStudent(props) {
                 toast.error(error);
             });
     };
+    const editCourseStudent = e => {
+        console.log('e', e.target.value)
+        let Id = e.target.value;
+        setDatas({ ...datas, staffId: e.target.value })
+
+        // console.log('student.staffId.courseId', datas.staffId)
+        axios.get(`${Config.baseURL}/api/courses/${Id}`)
+            .then(res => {
+                console.log('res.data.data', res.data.data.staffId)
+                setStaffCourse(res.data.data.staffId);
+                setLoading(false)
+            })
+            .catch(error => {
+                toast.error(error);
+                setLoading(false)
+            });
+    }
 
     return (
         <>
             <Card style={{ padding: '30px' }} variant="outlined">
                 <Typography variant="h4" component="h2">
                     Add Student
-                </Typography>;
+                </Typography>
+                {console.log('datas', datas)}
                 <form onSubmit={addStudentSubmit} >
                     <Box mb={2}>
                         <TextField
@@ -169,11 +190,11 @@ function AddStudent(props) {
                         select
                         fullWidth
                         label="Course name"
-                        name='course'
-                        onChange={addNewStudent}
+                        name='courseId'
+                        onChange={editCourseStudent}
                     >
                         {course.map((option) => (
-                            <MenuItem key={option.value} value={option.courseName}>
+                            <MenuItem key={option.value} value={option._id}>
                                 {option.courseName}
                             </MenuItem>
                         ))}
@@ -185,11 +206,11 @@ function AddStudent(props) {
                         select
                         fullWidth
                         label="Staff name"
-                        name='staffName'
+                        name='staffId'
                         onChange={addNewStudent}
                     >
                         {staff.map((option) => (
-                            <MenuItem key={option.value} value={option.staffName}>
+                            <MenuItem key={option.value} value={option._id}>
                                 {option.staffName}
                             </MenuItem>
                         ))}
@@ -209,7 +230,7 @@ function AddStudent(props) {
                         Upload
                         <input required onChange={changeHandler} hidden accept="image/*" type="file" />
                     </Button>
-                    <Typography>{imgPath?imgPath:'File upload required'}</Typography>
+                    <Typography>{imgPath ? imgPath : 'File upload required'}</Typography>
                     <div align="right">
                         <Button onClick={() => props.value.history.push('/student')} style={{ marginRight: '15px' }} variant="outlined" startIcon={<CloseIcon />}>
                             Cancel

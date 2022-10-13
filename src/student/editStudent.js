@@ -18,6 +18,7 @@ import Config from '../config';
 
 function EditStudent(props) {
     const [student, setStudent] = useState([]);
+    const [staffCourse, setStaffCourse] = useState([]);
     const [imgPath, setImgPath] = useState(null);
     const [course, setcourse] = useState([]);
     const [staff, setStaff] = useState([]);
@@ -65,11 +66,29 @@ function EditStudent(props) {
                 setLoading(false)
             });
     };
+    const editCourseStudent = e => {
+        setStudent(prev => {
+            prev[e.target.name] = e.target.value;
+            return prev
+        });
+        console.log('student.staffId.courseId', student.staffId.courseId)
+        axios.get(`${Config.baseURL}/api/staffs/course/${student.staffId.courseId}`)
+            .then(res => {
+                console.log('res.data.data', res.data.data)
+                setStaffCourse(res.data.data);
+                setLoading(false)
+            })
+            .catch(error => {
+                toast.error(error);
+                setLoading(false)
+            });
+    }
     const editStudent = e => {
         setStudent(prev => {
             prev[e.target.name] = e.target.value;
             return prev
-        })
+        });
+
     };
     const handleDateChange1 = (date) => {
         setStudent({ ...student, dob: date });
@@ -89,9 +108,10 @@ function EditStudent(props) {
         formdata.append("bloodGroup", student.bloodGroup);
         formdata.append("fatherName", student.fatherName);
         formdata.append("motherName", student.motherName);
-        formdata.append("course", student.course);
-        formdata.append("staffName", student.staffName);
+        formdata.append("courseId", student.courseId);
+        formdata.append("staffId", student.staffId);
         formdata.append("address", student.address);
+        formdata.append("imageName", imgPath)
         axios.put(`${Config.baseURL}/api/students/${ID}`, formdata)
             .then(res => {
                 toast.success(res.data.message);
@@ -106,11 +126,12 @@ function EditStudent(props) {
 
     return (
         <>{
-            loading ? <div>...loading</div> :
+            loading ? <div>...loading</div> : student && Object.keys(student).length > 0 ?
                 <Card style={{ padding: '30px' }} variant="outlined">
                     <Typography variant="h4" component="h2">
                         Edit Student
                     </Typography>
+                    {console.log('staffCourse', staffCourse)}
                     <form onSubmit={updateStudentSubmit}>
                         <Box mb={2}>
                             <TextField
@@ -192,33 +213,70 @@ function EditStudent(props) {
                             select
                             fullWidth
                             label="Course name"
-                            name='course'
-                            defaultValue={student.course}
-                            onChange={editStudent}
+                            name='courseId'
+                            defaultValue={student && student.courseId && student.courseId._id ? student.courseId._id : ''}
+                            onChange={editCourseStudent}
                         >
                             {course.map((option) => (
-                                <MenuItem key={option.value} value={option.courseName}>
+                                <MenuItem key={option.value} value={option._id}>
                                     {option.courseName}
                                 </MenuItem>
                             ))}
                         </TextField>
-                        <TextField
+                        {console.log('ddd', student && student.staffId && student.staffId._id ? student.staffId._id : '')}
+                        {staffCourse.length === 0 ?
+                            <TextField
+                                required
+                                style={{ marginBottom: '15px' }}
+                                id="outlined-select-currency"
+                                select
+                                fullWidth
+                                label="Staff name"
+                                name='staffId'
+                                defaultValue={student && student.staffId && student.staffId._id ? student.staffId._id : ''}
+                                onChange={editStudent}
+                            >
+                                {staff.map((option) => (
+                                    <MenuItem key={option.value} value={option._id}>
+                                        {option.staffName}
+                                    </MenuItem>
+                                ))}
+                            </TextField> :
+                            <TextField
+                                required
+                                style={{ marginBottom: '15px' }}
+                                id="outlined-select-currency"
+                                select
+                                fullWidth
+                                label="Staff name"
+                                name='staffId'
+                                defaultValue={student && student.staffId && student.staffId._id ? student.staffId._id : ''}
+                                onChange={editStudent}
+                            >
+                                {staffCourse.map((option) => (
+                                    <MenuItem key={option.value} value={option._id}>
+                                        {option.staffName}
+                                    </MenuItem>
+                                ))}
+                            </TextField>}
+                        {/* <TextField
                             required
                             style={{ marginBottom: '15px' }}
                             id="outlined-select-currency"
                             select
                             fullWidth
                             label="Staff name"
-                            name='staffName'
-                            defaultValue={student.staffName}
+                            name='staffId'
+                            defaultValue={student && student.staffId && student.staffId._id ? student.staffId._id : ''}
                             onChange={editStudent}
                         >
                             {staff.map((option) => (
-                                <MenuItem key={option.value} value={option.staffName}>
-                                    {option.staffName}
-                                </MenuItem>
+                                console.log('option._id', option._id)
+                                // <MenuItem key={option.value} value={option._id}>
+                                //     {option.staffName}
+                                // </MenuItem>
                             ))}
-                        </TextField>
+                        </TextField> */}
                         <TextField mb={2}
                             required
                             id="outlined-multiline-static"
@@ -233,7 +291,7 @@ function EditStudent(props) {
                         />
                         <Button variant="contained" component="label">
                             Upload
-                            <input required onChange={changeHandler} hidden accept="image/*" type="file" />
+                            <input name='studentImage' onChange={changeHandler} hidden accept="image/*" type="file" />
                         </Button>
                         <Typography>{imgPath}</Typography>
 
@@ -246,7 +304,7 @@ function EditStudent(props) {
                             </Button>
                         </div>
                     </form>
-                </Card>
+                </Card> : <div>Not found</div>
         }
 
         </>

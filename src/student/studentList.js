@@ -98,8 +98,8 @@ function StudentList(props) {
                     </TableHead>
 
                     <TableBody>
+                        {console.log('student', student)}
                         {student.length === 0 ? <p align="center">No Student data found:)</p> :
-
                             student.map((row) => (
                                 <>
                                     <TableRow
@@ -115,9 +115,9 @@ function StudentList(props) {
                                         <TableCell align="right">{row.bloodGroup}</TableCell>
                                         <TableCell align="right">{row.fatherName}</TableCell>
                                         <TableCell align="right">{row.motherName}</TableCell>
-                                        <TableCell align="right">{row.course}</TableCell>
-                                        <TableCell align="right">{row.staffName}</TableCell>
-                                        <TableCell align="right">{<RemoveRedEyeIcon className='cursor' onClick={() => props.value.history.push(`/studentView/${row._id}`)}/>}&nbsp;&nbsp;{<EditIcon className='themeColor cursor' onClick={() => props.value.history.push(`/studentEdit/${row._id}`)} />}&nbsp;&nbsp;{<DeleteIcon className='dangerColor cursor' onClick={() => { DeleteStudent(row._id) }} />}</TableCell>
+                                        {/* <TableCell align="right">{row.courseId.courseName}</TableCell> */}
+                                        {/* <TableCell align="right">{row.staffId.staffName}</TableCell> */}
+                                        <TableCell align="right">{<RemoveRedEyeIcon className='cursor' onClick={() => props.value.history.push(`/studentView/${row._id}`)} />}&nbsp;&nbsp;{<EditIcon className='themeColor cursor' onClick={() => props.value.history.push(`/studentEdit/${row._id}`)} />}&nbsp;&nbsp;{<DeleteIcon className='dangerColor cursor' onClick={() => { DeleteStudent(row._id) }} />}</TableCell>
                                     </TableRow>
                                 </>
                             ))
