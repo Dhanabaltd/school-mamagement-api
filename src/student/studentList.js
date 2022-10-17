@@ -39,13 +39,36 @@ function StudentList(props) {
     const [open, setOpen] = useState(false);
     const [id, setId] = useState(0);
     const handleClose = () => setOpen(false);
+    const [names, setNames] = useState([]);
 
     useEffect(() => {
         studentList();
     }, [])
+
+    useEffect(() => {
+        const Staff_names = []
+        student.map(cour => {
+            Staff_names[cour._id] = Staff_names[cour._id] ? Staff_names.cour : []
+            console.log(Staff_names, 'Staff_namesStaff_names')
+            cour.staffId.map(data => {
+                console.log(data.staffName , "ota")
+                if(Staff_names[cour._id].length > 0){
+                    Staff_names[cour._id].push(" ,")
+                    Staff_names[cour._id].push(data.staffName)
+                }else{
+                    Staff_names[cour._id].push(data.staffName)
+                }
+
+            })
+        })
+        setNames(Staff_names)
+    },[student])
+
+
     const studentList = () => {
         axios.get(`${Config.baseURL}/api/students`)
             .then(res => {
+                console.log('ddddd',res.data.data)
                 setStudent(res.data.data);
             })
             .catch(error => {
@@ -78,7 +101,7 @@ function StudentList(props) {
                     Add
                 </Button>
             </div>
-
+            {console.log('Staff_names', names)}
             <TableContainer component={Paper}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
@@ -115,8 +138,8 @@ function StudentList(props) {
                                         <TableCell align="right">{row.bloodGroup}</TableCell>
                                         <TableCell align="right">{row.fatherName}</TableCell>
                                         <TableCell align="right">{row.motherName}</TableCell>
-                                        {/* <TableCell align="right">{row.courseId.courseName}</TableCell> */}
-                                        {/* <TableCell align="right">{row.staffId.staffName}</TableCell> */}
+                                        <TableCell align="right">{row.courseId.courseName}</TableCell>
+                                        <TableCell align="right">{names[row._id]}</TableCell>
                                         <TableCell align="right">{<RemoveRedEyeIcon className='cursor' onClick={() => props.value.history.push(`/studentView/${row._id}`)} />}&nbsp;&nbsp;{<EditIcon className='themeColor cursor' onClick={() => props.value.history.push(`/studentEdit/${row._id}`)} />}&nbsp;&nbsp;{<DeleteIcon className='dangerColor cursor' onClick={() => { DeleteStudent(row._id) }} />}</TableCell>
                                     </TableRow>
                                 </>

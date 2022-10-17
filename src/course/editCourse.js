@@ -42,7 +42,7 @@ function EditCourse(props) {
     const [course, setCourse] = useState([]);
     const [loading, setLoading] = useState(false);
     const [personName, setPersonName] = useState([]);
-    
+
 
     const ID = props.value.match.params.id;
 
@@ -115,7 +115,7 @@ function EditCourse(props) {
                                 focused
                                 onChange={editCourse} />
                         </Box>
-                        
+
                         <FormControl fullWidth sx={{ mb: 2 }}>
                             <InputLabel id="demo-multiple-name-label">Staff Name</InputLabel>
                             <Select
@@ -129,6 +129,7 @@ function EditCourse(props) {
                                 input={<OutlinedInput label="Name" />}
                                 MenuProps={MenuProps}
                             >
+                                {console.log('staff', staff)}
                                 {staff.map((name) => (
                                     <MenuItem
                                         key={name._id}

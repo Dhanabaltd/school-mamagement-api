@@ -41,11 +41,11 @@ function ViewCourse(props) {
                         </Button>
                     </div>
                     <Box mt={3} mb={2}>
-                        <Typography variant="h5" >Course Name</Typography>
+                        <Typography variant="h5" >Course Name : </Typography>
                         <Typography variant="h5"> {course.courseName}</Typography>
                     </Box>
                     <Box mt={3} mb={2}>
-                        <Typography variant="h5" >Staff Name</Typography>
+                        <Typography variant="h5" >Staff Name : </Typography>
                         <Typography variant="h5"> {course.staffName}</Typography>
                     </Box>
 

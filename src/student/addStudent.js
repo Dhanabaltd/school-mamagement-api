@@ -1,5 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import Card from '@mui/material/Card';
@@ -18,8 +23,29 @@ import {
 } from '@material-ui/pickers';
 
 
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
+
+function getStyles(name, personName, theme) {
+    return {
+        fontWeight:
+            personName.indexOf(name) === -1
+                ? theme.typography.fontWeightRegular
+                : theme.typography.fontWeightMedium,
+    };
+}
+
 function AddStudent(props) {
-    const [student, setStudent] = useState([]);
+    const theme = useTheme();
+    const [personName, setPersonName] = useState([]);
     const [course, setcourse] = useState([]);
     const [staff, setStaff] = useState([]);
     const [imgPath, setImgPath] = useState(null);
@@ -99,20 +125,25 @@ function AddStudent(props) {
         console.log('e', e.target.value)
         let Id = e.target.value;
         setDatas({ ...datas, staffId: e.target.value })
+        setDatas({ ...datas, courseId: e.target.value })
 
         // console.log('student.staffId.courseId', datas.staffId)
         axios.get(`${Config.baseURL}/api/courses/${Id}`)
             .then(res => {
-                console.log('res.data.data', res.data.data.staffId)
-                setStaffCourse(res.data.data.staffId);
+                console.log('res.data.data', res.data.data)
+                setStaffCourse(res.data.data);
                 setLoading(false)
             })
             .catch(error => {
                 toast.error(error);
                 setLoading(false)
             });
-    }
-
+    };
+    const handleChange = (event) => {
+        const { target: { value }, } = event;
+        setPersonName(typeof value === 'string' ? value.split(',') : value);
+        setDatas({ ...datas, staffId: typeof value === 'string' ? value.split(',') : value, })
+    };
     return (
         <>
             <Card style={{ padding: '30px' }} variant="outlined">
@@ -199,7 +230,79 @@ function AddStudent(props) {
                             </MenuItem>
                         ))}
                     </TextField>
-                    <TextField
+                    {staffCourse.length === 0 ? <FormControl fullWidth sx={{ mb: 2 }}>
+                        <InputLabel id="demo-multiple-name-label">Staff Name</InputLabel>
+                        <Select
+                            fullWidth
+                            required
+                            labelId="demo-multiple-name-label"
+                            id="demo-multiple-name"
+                            multiple
+                            value={personName}
+                            onChange={handleChange}
+                            input={<OutlinedInput label="Name" />}
+                            MenuProps={MenuProps}
+                        >
+                            {staff.map((name) => (
+                                <MenuItem
+                                    key={name._id}
+                                    value={name._id}
+                                    style={getStyles(name, personName, theme)}
+                                >
+                                    {name.staffName}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl> : <FormControl fullWidth sx={{ mb: 2 }}>
+                        <InputLabel id="demo-multiple-name-label">Staff Name</InputLabel>
+                        <Select
+                            fullWidth
+                            required
+                            labelId="demo-multiple-name-label"
+                            id="demo-multiple-name"
+                            multiple
+                            value={staffCourse && staffCourse.staffId ? staffCourse.staffId : ''}
+                            onChange={handleChange}
+                            input={<OutlinedInput label="Name" />}
+                            MenuProps={MenuProps}
+                        >
+                            {staff.map((name) => (
+                                <MenuItem
+                                    key={name._id}
+                                    value={name._id}
+                                    style={getStyles(name, personName, theme)}
+                                >
+                                    {name.staffName}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>}
+                    {console.log('staffCourse', staffCourse && staffCourse.staffId ? staffCourse.staffId : '')}
+                    {/* <FormControl fullWidth sx={{ mb: 2 }}>
+                        <InputLabel id="demo-multiple-name-label">Staff Name</InputLabel>
+                        <Select
+                            fullWidth
+                            required
+                            labelId="demo-multiple-name-label"
+                            id="demo-multiple-name"
+                            multiple
+                            value={staffCourse && staffCourse.staffId ? staffCourse.staffId : ''}
+                            onChange={handleChange}
+                            input={<OutlinedInput label="Name" />}
+                            MenuProps={MenuProps}
+                        >
+                            {staff.map((name) => (
+                                <MenuItem
+                                    key={name._id}
+                                    value={name._id}
+                                    style={getStyles(name, personName, theme)}
+                                >
+                                    {name.staffName}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl> */}
+                    {/* <TextField
                         required
                         style={{ marginBottom: '15px' }}
                         id="outlined-select-currency"
@@ -207,6 +310,7 @@ function AddStudent(props) {
                         fullWidth
                         label="Staff name"
                         name='staffId'
+                        value={ccc}
                         onChange={addNewStudent}
                     >
                         {staff.map((option) => (
@@ -214,7 +318,8 @@ function AddStudent(props) {
                                 {option.staffName}
                             </MenuItem>
                         ))}
-                    </TextField>
+                    </TextField> */}
+
                     <TextField mb={2}
                         required
                         id="outlined-multiline-static"

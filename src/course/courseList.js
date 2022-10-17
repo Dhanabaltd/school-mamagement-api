@@ -35,7 +35,7 @@ function CourseList(props) {
     const [course, setcourse] = useState([]);
     const [open, setOpen] = useState(false);
     const [id, setId] = useState(0);
-    const [names, setNames] = useState([])
+    const [names, setNames] = useState([]);
     const handleClose = () => setOpen(false);
 
     useEffect(() => {

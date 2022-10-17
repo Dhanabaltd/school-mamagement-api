@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import Card from '@mui/material/Card';
 import TextField from '@mui/material/TextField';
@@ -9,20 +10,47 @@ import MenuItem from '@mui/material/MenuItem';
 import CloseIcon from '@mui/icons-material/Close';
 import DateFnsUtils from '@date-io/date-fns';
 import { toast } from 'react-toastify';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import {
     MuiPickersUtilsProvider,
     KeyboardDatePicker,
 } from '@material-ui/pickers';
 import axios from 'axios';
 import Config from '../config';
+import '../style.css';
+
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+    PaperProps: {
+        style: {
+            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+            width: 250,
+        },
+    },
+};
+
+function getStyles(name, personName, theme) {
+    return {
+        fontWeight:
+            personName.indexOf(name) === -1
+                ? theme.typography.fontWeightRegular
+                : theme.typography.fontWeightMedium,
+    };
+}
 
 function EditStudent(props) {
+    const theme = useTheme();
     const [student, setStudent] = useState([]);
     const [staffCourse, setStaffCourse] = useState([]);
     const [imgPath, setImgPath] = useState(null);
     const [course, setcourse] = useState([]);
     const [staff, setStaff] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [personName, setPersonName] = useState([]);
     const ID = props.value.match.params.id;
     useEffect(() => {
         setLoading(true)
@@ -121,7 +149,11 @@ function EditStudent(props) {
                 toast.success(error);
             });
     };
-
+    const handleChange = (event) => {
+        const { target: { value }, } = event;
+        setPersonName(typeof value === 'string' ? value.split(',') : value);
+        setcourse({ ...course, staffId: typeof value === 'string' ? value.split(',') : value, })
+    };
 
 
     return (
@@ -146,6 +178,7 @@ function EditStudent(props) {
                         </Box>
                         <Box mb={2}>
                             <TextField
+                                className='cursor'
                                 fullWidth
                                 required
                                 id="demo-helper-text-misaligned-no-helper"
@@ -225,40 +258,92 @@ function EditStudent(props) {
                         </TextField>
                         {console.log('ddd', student && student.staffId && student.staffId._id ? student.staffId._id : '')}
                         {staffCourse.length === 0 ?
-                            <TextField
-                                required
-                                style={{ marginBottom: '15px' }}
-                                id="outlined-select-currency"
-                                select
-                                fullWidth
-                                label="Staff name"
-                                name='staffId'
-                                defaultValue={student && student.staffId && student.staffId._id ? student.staffId._id : ''}
-                                onChange={editStudent}
-                            >
-                                {staff.map((option) => (
-                                    <MenuItem key={option.value} value={option._id}>
-                                        {option.staffName}
-                                    </MenuItem>
-                                ))}
-                            </TextField> :
-                            <TextField
-                                required
-                                style={{ marginBottom: '15px' }}
-                                id="outlined-select-currency"
-                                select
-                                fullWidth
-                                label="Staff name"
-                                name='staffId'
-                                defaultValue={student && student.staffId && student.staffId._id ? student.staffId._id : ''}
-                                onChange={editStudent}
-                            >
-                                {staffCourse.map((option) => (
-                                    <MenuItem key={option.value} value={option._id}>
-                                        {option.staffName}
-                                    </MenuItem>
-                                ))}
-                            </TextField>}
+                            <FormControl fullWidth sx={{ mb: 2 }}>
+                                <InputLabel id="demo-multiple-name-label">Staff Name</InputLabel>
+                                <Select
+                                    fullWidth
+                                    required
+                                    labelId="demo-multiple-name-label"
+                                    id="demo-multiple-name"
+                                    multiple
+                                    value={personName}
+                                    onChange={handleChange}
+                                    input={<OutlinedInput label="Name" />}
+                                    MenuProps={MenuProps}
+                                >
+                                    {staff.map((name) => (
+                                        <MenuItem
+                                            key={name._id}
+                                            value={name._id}
+                                            style={getStyles(name, personName, theme)}
+                                        >
+                                            {name.staffName}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            // <TextField
+                            //     required
+                            //     style={{ marginBottom: '15px' }}
+                            //     id="outlined-select-currency"
+                            //     select
+                            //     fullWidth
+                            //     label="Staff name"
+                            //     name='staffId'
+                            //     defaultValue={student && student.staffId && student.staffId._id ? student.staffId._id : ''}
+                            //     onChange={editStudent}
+                            // >
+                            //     {staff.map((option) => (
+                            //         <MenuItem key={option.value} value={option._id}>
+                            //             {option.staffName}
+                            //         </MenuItem>
+                            //     ))}
+                            // </TextField> 
+                            :
+                            <FormControl fullWidth sx={{ mb: 2 }}>
+                                <InputLabel id="demo-multiple-name-label">Staff Name</InputLabel>
+                                <Select
+                                    fullWidth
+                                    required
+                                    labelId="demo-multiple-name-label"
+                                    id="demo-multiple-name"
+                                    multiple
+                                    value={staffCourse && staffCourse.staffId ? staffCourse.staffId : ''}
+                                    onChange={handleChange}
+                                    input={<OutlinedInput label="Name" />}
+                                    MenuProps={MenuProps}
+                                >
+                                    {staff.map((name) => (
+                                        <MenuItem
+                                            key={name._id}
+                                            value={name._id}
+                                            style={getStyles(name, personName, theme)}
+                                        >
+                                            {name.staffName}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                            // <TextField
+                            //     required
+                            //     style={{ marginBottom: '15px' }}
+                            //     id="outlined-select-currency"
+                            //     select
+                            //     fullWidth
+                            //     label="Staff name"
+                            //     name='staffId'
+                            //     defaultValue={student && student.staffId && student.staffId._id ? student.staffId._id : ''}
+                            //     onChange={editStudent}
+                            // >
+                            //     {staffCourse.map((option) => (
+                            //         <MenuItem key={option.value} value={option._id}>
+                            //             {option.staffName}
+                            //         </MenuItem>
+                            //     ))}
+                            // </TextField>
+
+                        }
                         {/* <TextField
                             required
                             style={{ marginBottom: '15px' }}
